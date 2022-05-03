@@ -51,8 +51,7 @@ export default {
     }
   },
   methods: {
-    async handleSubmit() {
-      try {
+    handleSubmit() {
       // const data = JSON.stringify({
       //   email: this.email,
       //   password: this.password
@@ -72,17 +71,17 @@ export default {
         return
       } 
 
-      // 使用 authorizationAPI 的 signIn 方法
-      // 並且帶入使用者填寫的 email 和 password
-      const response = await authorizationAPI.signIn({
-        email: this.email,
-        password: this.password
-      })
+      authorizationAPI
+        .signIn({
+          email: this.email,
+          password: this.password
+        })
+        .then(response => {
+          // console.log('response', response)
 
-        
           // 取得 API 請求後的資料，需解構賦值
           const { data } = response
-          
+
           // 在程式碼中多加一個判斷，透過 throw 拋出錯誤
           // 都沒填，HTTP status: 200
           if ( data.status !== 'success' ) {
@@ -94,7 +93,8 @@ export default {
 
           // 成功登入後轉址到餐廳首頁
           this.$router.push('/restaurants')
-        } catch (error) {
+        })
+        .catch(error => {
           // 填錯，HTTP status: 不是介於 200~299
 
           // 按鈕可以重複送出
@@ -109,7 +109,7 @@ export default {
             title: '請確認您輸入了正確的帳號密碼'
           })
           console.log('Error', error)
-        }
+        })
     }
   },
 }

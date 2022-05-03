@@ -24,7 +24,7 @@
 
         <button 
           v-if="restaurant.isFavorited"
-          @click.stop.prevent="deleteFavorite"
+          @click.stop.prevent="deleteFavorite(restaurant.id)"
           type="button" 
           class="btn btn-danger mr-2"
         >
@@ -32,7 +32,7 @@
         </button>
         <button 
           v-else
-          @click.stop.prevent="addFavorite"
+          @click.stop.prevent="addFavorite(restaurant.id)"
           type="button" 
           class="btn btn-primary"
         >
@@ -45,6 +45,8 @@
 
 <script>
 import { emptyImageFilter } from './../utils/mixins'
+import usersAPI from './../apis/users'
+import {Toast} from './../utils/helpers'
 
 export default {
   name: 'RestaurantTop',
@@ -61,16 +63,48 @@ export default {
     }
   }, 
   methods: {
-    addFavorite () {
-      this.restaurant = {
-        ...this.restaurant, // 解構賦值
-        isFavorited: true
+    async addFavorite (restaurantId) {
+      try {
+        const {data} = await usersAPI.addFavorite({restaurantId})
+
+        // 若請求過程有錯，則進到錯誤處理
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        this.restaurant = {
+          ...this.restaurant, // 解構賦值
+          isFavorited: true
+        }
+      } catch (error) {
+        console.log('Error', error)
+        // 給使用者的提示
+          Toast.fire({
+            icon: 'error',
+            title: '無法加入最愛，請稍後再試'
+          })
       }
     },
-    deleteFavorite () {
-      this.restaurant = {
-        ...this.restaurant, // 解構賦值
-        isFavorited: false
+    async deleteFavorite (restaurantId) {
+      try {
+        const {data} = await usersAPI.addFavorite({restaurantId})
+
+        // 若請求過程有錯，則進到錯誤處理
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        this.restaurant = {
+          ...this.restaurant, // 解構賦值
+          isFavorited: false
+        }
+      } catch (error) {
+        console.log('Error', error)
+        // 給使用者的提示
+          Toast.fire({
+            icon: 'error',
+            title: '無法加入最愛，請稍後再試'
+          })
       }
     },
   }
