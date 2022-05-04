@@ -53,6 +53,10 @@ export default {
         // console.log(data.status)  // undefined
         // console.log('fetchRestaurant id:', restaurantId)
 
+        if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+
         const {
           id,
           name,
@@ -92,8 +96,9 @@ export default {
           formData
         })
       
-        console.log(data.status)
-        console.log('HI')
+        // console.log(data)
+        // console.log(data.status)
+        // console.log('HI')
 
         if (data.status !== 'success') {
           throw new Error(data.message)

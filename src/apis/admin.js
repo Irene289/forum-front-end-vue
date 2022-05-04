@@ -8,7 +8,8 @@ export default {
         // 從 LocalStorage 取出 token，放進 Header
         headers: { Authorization: `Bearer ${getToken()}` }
       })
-    }
+    },
+  
   },
   restaurants: {
     getDetail({ restaurantId }) {
