@@ -35,7 +35,7 @@
         <option
           v-for="category in categories"
           :key="category.id"
-          value="category.id"
+          :value="category.id"
         >
           {{ category.name }}
         </option>
@@ -145,7 +145,7 @@ export default {
     return {
       restaurant: {
         name: '',
-        categoryId: '',
+        CategoryId: '',
         tel: '',
         address: '',
         openingHours: '',
@@ -156,12 +156,20 @@ export default {
       isLoading: true
     }
   },
+  watch: {
+    initialRestaurant (newValue) {
+      this.restaurant = {
+        ...this.restaurant,
+        ...newValue
+      }
+    }
+  },
   created () {
     this.fetchCategories()
-    this.restaurant = {
-      ...this.restaurant,
-      ...this.initialRestaurant
-    }
+    // this.restaurant = {
+    //   ...this.restaurant,
+    //   ...this.initialRestaurant
+    // }
   },
   methods: {
     async fetchCategories () {

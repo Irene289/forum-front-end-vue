@@ -32,7 +32,7 @@ export default {
 
         // STEP 3: 透過 restaurants.create 方法來向伺服器建立餐廳
         const { data } = await adminAPI.restaurants.create({ formData })
-        console.log(data)
+        // console.log(data)
         
         if (data.status !== 'success') {
           throw new Error(data.message)
