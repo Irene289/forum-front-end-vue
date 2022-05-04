@@ -15,6 +15,7 @@
         </div>
         <div class="col-auto">
           <button
+            :disabled="isProcessing"
             @click.stop.prevent="createCategory"
             type="button"
             class="btn btn-primary"
@@ -136,39 +137,17 @@
 
 <script>
 import AdminNav from '@/components/AdminNav'
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid'
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
 //  2. 定義暫時使用的資料
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: '中式料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 2,
-      name: '日本料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 3,
-      name: '義大利料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 4,
-      name: '墨西哥料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    }
-  ]
-}
+// const dummyData = {
+  
+// }
 
 export default {
+  name: 'AdminCategories',
   components: {
     AdminNav
   },
@@ -176,7 +155,8 @@ export default {
   data () {
     return {
       categories: [],
-      newCategoryName: ''
+      newCategoryName: '',
+      isProcessing: false
     }
   },
   // 5. 調用 `fetchCategories` 方法
@@ -185,26 +165,89 @@ export default {
   },
   methods: {
     // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
-    fetchCategories () {
-      this.categories = dummyData.categories.map( category => ({
-        ...category,
-        isEditing: false,
-        nameCached: ''
-      }))
-    },
-    createCategory () {
-      // TODO: 透過 API 告知伺服器欲新增的餐廳類別...
+    async fetchCategories () {
+      try {
+        const response = await adminAPI.categories.get()
+        const { data } = response
 
-      // 將新的類別添加到陣列中
-      this.categories.push({
-        id: uuidv4(),
-        name: this.newCategoryName
-      }) 
-      this.newCategoryName = ''
+        // console.log(response)
+        // console.log(data)
+
+        if (response.statusText !== 'OK') {
+          throw new Error(response.statusText)
+        } 
+
+        this.categories = data.categories.map( category => ({
+          ...category,
+          isEditing: false,
+          nameCached: ''
+        }))
+
+      } catch (error) {
+        console.log('Error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得類別，請稍後再試'
+        })
+      }
     },
-    deleteCategory (categoryId) {
-      // TODO: 透過 API 告知伺服器欲刪除的餐廳類別
-      this.categories = this.categories.filter( category => category.id !== categoryId )
+    async createCategory () {
+      // 透過 API 告知伺服器欲新增的餐廳類別...
+      try {
+        this.isProcessing = true
+
+        if ( !this.newCategoryName) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請輸入類別'
+          })
+          this.isProcessing = false
+          return
+        } 
+
+        const { data } = await adminAPI.categories.create({ 
+          name: this.newCategoryName 
+        })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        // 將新的類別添加到陣列中
+        this.categories.push({
+          id: data.categoryId,
+          name: this.newCategoryName, 
+          isEditing: false,
+        }) 
+
+        this.isProcessing = false
+        this.newCategoryName = ''
+      } catch (error) {
+        this.isProcessing = false
+        console.log('Error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法新增類別，請稍後再試'
+        })
+      }
+    },
+    async deleteCategory (categoryId) {
+      // 透過 API 告知伺服器欲刪除的餐廳類別
+      try {
+        const { data } = await adminAPI.categories.delete({ categoryId })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        } 
+
+        this.categories = this.categories.filter( category => category.id !== categoryId )
+      } catch (error) {
+        console.log('Error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法刪除類別，請稍後再試'
+        })
+      }
     },
     toggleIsEditing (categoryId) {
       this.categories = this.categories.map( category => {

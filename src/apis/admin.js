@@ -9,15 +9,25 @@ export default {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
     },
-  
+    create({ name }) {
+      return apiHelper.post('/admin/categories', {name},
+      {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      })
+    },
+    delete ({ categoryId }) {
+      return apiHelper.delete(`/admin/categories/${categoryId}`, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      })
+    } 
   },
   restaurants: {
-    getDetail({ restaurantId }) {
+    getDetail ({ restaurantId }) {
       return apiHelper.get(`/admin/restaurants/${restaurantId}`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
     },
-    update({ restaurantId, formData }) {
+    update ({ restaurantId, formData }) {
       return apiHelper.put(`/admin/restaurants/${restaurantId}`, formData, {
         headers: { Authorization: `Bearer ${getToken()}` }
       })

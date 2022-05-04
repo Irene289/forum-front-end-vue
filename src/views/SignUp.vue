@@ -114,12 +114,12 @@ export default {
         this.isProcessing = true
 
         if ( !this.name || !this.email || !this.password || !this.passwordCheck) {
-        Toast.fire({
-          icon: 'warning',
-          title: '請輸入所有欄位'
-        })
-        return
-      } 
+          Toast.fire({
+            icon: 'warning',
+            title: '請輸入所有欄位'
+          })
+          return
+        } 
 
         if (this.password !== this.passwordCheck) {
           alert('Password Check NG! Please check again!')
