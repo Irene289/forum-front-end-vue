@@ -137,14 +137,8 @@
 
 <script>
 import AdminNav from '@/components/AdminNav'
-// import { v4 as uuidv4 } from 'uuid'
 import adminAPI from './../apis/admin'
 import { Toast } from './../utils/helpers'
-
-//  2. 定義暫時使用的資料
-// const dummyData = {
-  
-// }
 
 export default {
   name: 'AdminCategories',
@@ -164,7 +158,7 @@ export default {
     this.fetchCategories()
   },
   methods: {
-    // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
+    // 4. 定義 `fetchCategories` 方法，串 API 資料帶入 Vue 物件
     async fetchCategories () {
       try {
         const response = await adminAPI.categories.get()
@@ -192,7 +186,7 @@ export default {
       }
     },
     async createCategory () {
-      // 透過 API 告知伺服器欲新增的餐廳類別...
+      // 透過 API 告知伺服器欲新增的餐廳類別
       try {
         this.isProcessing = true
 
@@ -251,19 +245,36 @@ export default {
     },
     toggleIsEditing (categoryId) {
       this.categories = this.categories.map( category => {
-        if ( category.id === categoryId ) {
-          return {
-              ...category,
-              nameCached: category.name, // 將現有資料帶入nameCached中
-              isEditing: !category.isEditing 
-          }
+      if ( category.id === categoryId ) {
+        return {
+            ...category,
+            nameCached: category.name, // 將現有資料帶入nameCached中
+            isEditing: !category.isEditing 
         }
+      }
         return category
       })
     },
-    updateCategory ({ categoryId, name }) {
-      console.log({categoryId, name})
-      this.toggleIsEditing(categoryId)
+    async updateCategory ({ categoryId, name }) {
+      try {
+        const { data } = await adminAPI.categories.update({ 
+          categoryId,
+          name
+        })
+        console.log(data)
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        this.toggleIsEditing(categoryId)
+      } catch (error) {
+        console.log('Error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法刪除類別，請稍後再試'
+        })
+      }
     },
     handleCancel (categoryId) {
       this.categories = this.categories.map( category => {

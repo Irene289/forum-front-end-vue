@@ -50,9 +50,6 @@ export default {
       try {
         const { data } = await adminAPI.restaurants.getDetail({ restaurantId })
 
-        // console.log(data.status)  // undefined
-        // console.log('fetchRestaurant id:', restaurantId)
-
         if (data.status === 'error') {
           throw new Error(data.message)
         }
@@ -95,10 +92,6 @@ export default {
           restaurantId: this.restaurant.id,
           formData
         })
-      
-        // console.log(data)
-        // console.log(data.status)
-        // console.log('HI')
 
         if (data.status !== 'success') {
           throw new Error(data.message)
@@ -112,10 +105,6 @@ export default {
           title: '無法修改餐廳資料，請稍後再試'
         })
       }
-
-      // for (let [name, value] of formData.entries()) {
-      //   console.log(name + ": " + value);
-      // }
     },
   },
 }
