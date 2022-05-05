@@ -55,43 +55,18 @@
 </template>
 
 <script>
-  // seed data
-  const dummyUser = {
-    currentUser: {
-      id: 1,
-      name: '管理者',
-      email: 'root@example.com',
-      image: 'https://i.pravatar.cc/300',
-      isAdmin: true
-    },
-    isAuthenticated: true
+import { mapState } from 'vuex'
+
+// Step1：移除 dummyUser
+
+export default {
+  // Step2：移除 data 屬性
+  // Step3：移除 created 和 fetchUser 的方法
+
+  // Step4：新增 `mapState` 方法
+  computed: {
+    ...mapState(['currentUser', 'isAuthenticated'])
   }
-  export default {
-  // Vue 會在沒有資料時使用此預設值
-    data () {
-      return {
-        currentUser: {
-          id: -1,
-          name: '',
-          email: '',
-          image: '',
-          isAdmin: false
-        },
-        isAuthenticated: false
-      }
-    },
-    created () {
-      this.fetchUser()
-    },
-    methods: {
-      fetchUser () {
-        this.currentUser = {
-          ...this.currentUser,
-          ...dummyUser.currentUser
-        }
-        this.isAuthenticated = dummyUser.isAuthenticated
-      }
-    }
 }  
 
 </script>

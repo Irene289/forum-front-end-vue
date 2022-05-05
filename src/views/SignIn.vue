@@ -53,63 +53,67 @@ export default {
   methods: {
     async handleSubmit() {
       try {
-      // const data = JSON.stringify({
-      //   email: this.email,
-      //   password: this.password
-      // })
-      // console.log('data', data)
+        // const data = JSON.stringify({
+        //   email: this.email,
+        //   password: this.password
+        // })
+        // console.log('data', data)
 
-      this.isProcessing = true
+        this.isProcessing = true
 
-      // 用 SweetAlert2 處理漏填：給使用者的提示
-      // 如果 email 或 password 為空，則使用 Toast 提示
-      // 然後 return 不繼續往後執行
-      if ( !this.email || !this.password ) {
-        Toast.fire({
-          icon: 'warning',
-          title: '請輸入 email & password!'
-        })
-        return
-      } 
-
-      // 使用 authorizationAPI 的 signIn 方法
-      // 並且帶入使用者填寫的 email 和 password
-      const response = await authorizationAPI.signIn({
-        email: this.email,
-        password: this.password
-      })
-
-        
-          // 取得 API 請求後的資料，需解構賦值
-          const { data } = response
-          
-          // 在程式碼中多加一個判斷，透過 throw 拋出錯誤
-          // 都沒填，HTTP status: 200
-          if ( data.status !== 'success' ) {
-            throw new Error(data.message)
-          }
-
-          // 將 token 存放在 localStorage 內
-          localStorage.setItem('token', data.token)
-
-          // 成功登入後轉址到餐廳首頁
-          this.$router.push('/restaurants')
-        } catch (error) {
-          // 填錯，HTTP status: 不是介於 200~299
-
-          // 按鈕可以重複送出
-          this.isProcessing = false
-
-          // 將密碼欄位清空
-          this.password = ''
-
-          // 給使用者的提示
+        // 用 SweetAlert2 處理漏填：給使用者的提示
+        // 如果 email 或 password 為空，則使用 Toast 提示
+        // 然後 return 不繼續往後執行
+        if ( !this.email || !this.password ) {
           Toast.fire({
             icon: 'warning',
-            title: '請確認您輸入了正確的帳號密碼'
+            title: '請輸入 email & password!'
           })
-          console.log('Error', error)
+          return
+        } 
+
+        // 使用 authorizationAPI 的 signIn 方法
+        // 並且帶入使用者填寫的 email 和 password
+        const response = await authorizationAPI.signIn({
+          email: this.email,
+          password: this.password
+        })
+
+        // console.log(response)
+        
+        // 取得 API 請求後的資料，需解構賦值
+        const { data } = response
+        
+        // 在程式碼中多加一個判斷，透過 throw 拋出錯誤
+        // 都沒填，HTTP status: 200
+        if ( data.status !== 'success' ) {
+          throw new Error(data.message)
         }
+
+        // 將 token 存放在 localStorage 內
+        localStorage.setItem('token', data.token)
+
+        // Vue 物件提交 mutation 事件
+        this.$store.commit('setCurrentUser', data.user)
+
+        // 成功登入後轉址到餐廳首頁
+        this.$router.push('/restaurants')
+      } catch (error) {
+        // 填錯，HTTP status: 不是介於 200~299
+
+        // 按鈕可以重複送出
+        this.isProcessing = false
+
+        // 將密碼欄位清空
+        this.password = ''
+
+        // 給使用者的提示
+        Toast.fire({
+          icon: 'warning',
+          title: '請確認您輸入了正確的帳號密碼'
+        })
+        console.log('Error', error)
+      }
     }
   },
 }

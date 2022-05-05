@@ -2,6 +2,11 @@ import { apiHelper } from "../utils/helpers"
 const getToken = () => localStorage.getItem('token')
 
 export default {
+  getRestaurant({ restaurantId }) {
+    return apiHelper.get(`/restaurants/${restaurantId}`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
+  },
   getRestaurants ({ page, categoryId }) {
     // 帶入 queryString
     const searchParams = new URLSearchParams({page, categoryId})
@@ -20,5 +25,11 @@ export default {
     return apiHelper.get('/restaurants/top', {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
-  }
+  },
+  // 改用 getRestaurant
+  // getDashboard({ restaurantId }) {
+  //   return apiHelper.get(`/restaurants/${restaurantId}/dashboard`, {
+  //     headers: { Authorization: `Bearer ${getToken()}` }
+  //   })
+  // }
 }

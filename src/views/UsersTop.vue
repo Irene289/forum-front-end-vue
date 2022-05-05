@@ -4,11 +4,6 @@
     <h1 class="mt-5">美食達人</h1>
     <hr />
     <div class="row text-center">
-      <!-- <UserCard 
-        v-for="user in users"
-        :key="user.id"
-        :initial-user="user" 
-      /> -->
       <div 
         class="col-3" 
         v-for="user in users" 
@@ -25,7 +20,17 @@
         <span class="badge badge-secondary"
           >追蹤人數：{{ user.followerCount }}</span
         >
-        <p class="mt-3">
+        <br>
+        <template v-if="currentUser.id === user.id">
+          <router-link 
+            :to="{ name: 'user-edit', params: { id: currentUser.id }}"
+            class="btn btn-primary"
+          >
+              Edit
+          </router-link>
+        </template>
+        <template v-else 
+          class="mt-3">
           <button 
             v-if="user.isFollowed"
             @click.stop.prevent="deleteFollow(user.id)"
@@ -42,7 +47,7 @@
           >
             追蹤
           </button>
-        </p>
+        </template>
       </div>
     </div>
   </div>
@@ -50,17 +55,16 @@
 
 <script>
 import { emptyImageFilter } from './../utils/mixins'
-import NavTabs from "./../components/NavTabs";
-// import UserCard from './../components/UserCard'
+import NavTabs from "./../components/NavTabs"
 import usersAPI from './../apis/users'
 import {Toast} from './../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   name: "UsersTop",
   mixins: [emptyImageFilter],
   components: {
-    NavTabs,
-    // UserCard,
+    NavTabs
   },
   data() {
     return {
@@ -74,8 +78,6 @@ export default {
     async fetchUsers() {
       try {
         const { data } = await usersAPI.getTopUsers()
-
-        // this.users = data.users
 
         this.users = data.users.map(user => ({
           id: user.id,
@@ -148,5 +150,8 @@ export default {
       }
     }
   },
-};
+  computed: {
+    ...mapState(['currentUser'])
+  }
+}
 </script>

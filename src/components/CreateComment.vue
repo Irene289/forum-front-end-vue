@@ -26,7 +26,8 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid"
+import commentsAPI from './../apis/comments'
+import { Toast } from './../utils/helpers'
 
 export default {
   name: 'CreateComment',
@@ -42,19 +43,33 @@ export default {
     }
   },
   methods: {
-    handleSubmit() {
+    async handleSubmit() {
       // console.log('handleSubmit', this.text)
+      try {
+        // 向 API 發送 POST 請求
+        const { data } = await commentsAPI.postComment({
+          text: this.text,
+          restaurantId: this.restaurantId
+        })
+        
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        } 
 
-      // TODO: 向 API 發送 POST 請求
-      // 伺服器新增 Comment 成功後...
-
-      this.$emit('after-create-comment', {
-        commentId: uuidv4(), // 尚未串接 API 暫時使用隨機的 id
-        text: this.text,
-        restaurantId: this.restaurantId,
-      })
-      // 將表單內的資料清空
-      this.text = ''
+        // 伺服器新增 Comment 成功後...
+        this.$emit('after-create-comment', {
+          text: this.text,
+          restaurantId: this.restaurantId,
+        })
+        // 將表單內的資料清空
+        this.text = ''
+      } catch (error) {
+        console.log('Error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法刪除評論，請稍後再試'
+        })
+      } 
     }
   }
 }

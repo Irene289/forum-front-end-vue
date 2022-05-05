@@ -66,7 +66,7 @@ import usersAPI from './../apis/users'
 import {Toast} from './../utils/helpers'
 
 export default {
-  name: 'RestaurantsCard',
+  name: 'RestaurantCard',
   mixins: [emptyImageFilter],
   props: {
     // 資料不可改

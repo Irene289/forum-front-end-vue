@@ -13,7 +13,17 @@
     <span class="badge badge-secondary"
       >追蹤人數：{{ user.FollowerCount }}</span
     >
-    <p class="mt-3">
+    <br>
+    <template v-if="currentUser.id === user.id">
+      <router-link 
+        :to="{ name: 'user-edit', params: { id: currentUser.id }}"
+        class="btn btn-primary"
+      >
+          Edit
+      </router-link>
+    </template>
+    <template v-else
+      class="mt-3">
       <button 
         v-if="user.isFollowed"
         @click.stop.prevent="deleteFollow(user.id)"
@@ -30,25 +40,26 @@
       >
         追蹤
       </button>
-    </p>
+    </template>
   </div>
 </template>
 
 <script>
 import usersAPI from './../apis/users'
 import {Toast} from './../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   name: 'UserCard',
   props: {
-    users: {
-      type: Array,
+    initialUser: {
+      type: Object,
       required: true
     }
   },
   data() {
     return {
-      users: ''
+      user: this.initialUser
     }
   },
   methods: {
@@ -60,7 +71,7 @@ export default {
           throw new Error(data.message)
         }
 
-        this.users = this.users.map( user => {
+        this.user = this.user.map( user => {
           if (user.id !== userId) {
             return user
           } else {
@@ -87,7 +98,7 @@ export default {
           throw new Error(data.message)
         }
 
-        this.users = this.users.map(user => {
+        this.user = this.user.map(user => {
           if (user.id !== userId) {
             return user
           } else {
@@ -106,6 +117,9 @@ export default {
         })
       }
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   }
 }
 </script>

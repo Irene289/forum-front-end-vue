@@ -4,6 +4,7 @@ import Restaurants from '../views/Restaurants'
 import SignIn from '../views/SignIn.vue'
 // import SignUp from '../views/SignUp.vue'
 import NotFound from '../views/NotFound.vue'
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -123,6 +124,14 @@ const router = new VueRouter({
   linkExactActiveClass: 'active',
   // mode: 'history' // 多加這一行，改為 history mode
   routes
+})
+
+router.beforeEach ((to, from, next) => { 
+  // console.log('beforeEach', {to, from})
+
+  // 使用 dispatch 呼叫 Vuex 內的 actions
+  store.dispatch('fetchCurrentUser')
+  next()
 })
 
 export default router
