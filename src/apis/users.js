@@ -7,46 +7,51 @@ export default {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
-  get({ userId }) {
+  get ({ userId }) {
     return apiHelper.get(`/users/${userId}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
-  getTopUsers() {
+  getTopUsers () {
     return apiHelper.get('/users/top', {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
+  },
+  update({ userId, formData }) {
+    return apiHelper.put(`/users/${userId}`, formData, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
 
   // 以下為使用者對其他使用者
-  addFollowing({ userId}) {
+  addFollowing ({ userId}) {
     return apiHelper.post(`/following/${userId}`, null, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
-  deleteFollowing({ userId }) {
+  deleteFollowing ({ userId }) {
     return apiHelper.delete(`/following/${userId}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
 
   // 以下為使用者對個別餐廳
-  addFavorite({ restaurantId }) {
+  addFavorite ({ restaurantId }) {
     return apiHelper.post(`/favorite/${restaurantId}`, null, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
-  deleteFavorite({ restaurantId }) {
+  deleteFavorite ({ restaurantId }) {
     return apiHelper.delete(`/favorite/${restaurantId}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
-  addLike({ restaurantId }) {
+  addLike ({ restaurantId }) {
     return apiHelper.post(`/like/${restaurantId}`, null, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
-  deleteLike({ restaurantId }) {
+  deleteLike ({ restaurantId }) {
     return apiHelper.delete(`/like/${restaurantId}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
