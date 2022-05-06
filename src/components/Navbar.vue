@@ -45,6 +45,7 @@
           <button
             type="button" 
             class="btn btn-sm btn-outline-success my-2 my-sm-0"
+            @click="logout"
             >
             登出
             </button>
@@ -66,6 +67,12 @@ export default {
   // Step4：新增 `mapState` 方法
   computed: {
     ...mapState(['currentUser', 'isAuthenticated'])
+  },
+  methods: {
+    logout () {
+      this.$store.commit('revokeAuthentication')
+      this.$router.push('/signin')
+    }
   }
 }  
 
