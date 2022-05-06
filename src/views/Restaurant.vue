@@ -1,20 +1,23 @@
 <template>
   <div class="container py-5">
-    <!-- 餐廳資訊頁 RestaurantDetail -->
-    <RestaurantDetail
-      :initial-restaurant= "restaurant"
-    />
-    <hr />
-    <!-- 餐廳評論 RestaurantComments -->
-    <RestaurantComments 
-      :restaurant-comments= "restaurantComments"
-      @after-delete-comment="afterDeleteComment"
-    />
-    <!-- 新增評論 CreateComment -->
-    <CreateComment 
-      :restaurant-id="restaurant.id"
-      @after-create-comment="afterCreateComment"
-    />
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <!-- 餐廳資訊頁 RestaurantDetail -->
+      <RestaurantDetail
+        :initial-restaurant= "restaurant"
+      />
+      <hr />
+      <!-- 餐廳評論 RestaurantComments -->
+      <RestaurantComments 
+        :restaurant-comments= "restaurantComments"
+        @after-delete-comment="afterDeleteComment"
+      />
+      <!-- 新增評論 CreateComment -->
+      <CreateComment 
+        :restaurant-id="restaurant.id"
+        @after-create-comment="afterCreateComment"
+      />
+    </template>
   </div>
 </template>
 
@@ -22,6 +25,7 @@
 import RestaurantDetail from './../components/RestaurantDetail'
 import RestaurantComments from './../components/RestaurantComments'
 import CreateComment from './../components/CreateComment'
+import Spinner from './../components/Spinner'
 import restaurantsAPI from './../apis/restaurants'
 import { Toast } from './../utils/helpers'
 import { mapState } from 'vuex'
@@ -31,7 +35,8 @@ export default {
   components: {
     RestaurantDetail,
     RestaurantComments,
-    CreateComment
+    CreateComment,
+    Spinner
   },
   beforeRouteUpdate (to, from, next) {
     const { id } = to.params
@@ -53,6 +58,7 @@ export default {
         isLiked: false
       },
       restaurantComments: [],
+      isLoading: true
     }
   },
   created () {
@@ -62,6 +68,7 @@ export default {
   methods: {
     async fetchRestaurant (restaurantId) {
       try {
+        this.isLoading = true
         const { data } = await restaurantsAPI.getRestaurant({restaurantId})
 
         // console.log(data.status) // undefined
@@ -96,8 +103,9 @@ export default {
           isLiked,
         }
         this.restaurantComments = Comments
-
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         Toast.fire({
           icon: 'error',
           title: '無法取得餐廳資訊，請稍後再試'

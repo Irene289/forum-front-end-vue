@@ -6,22 +6,30 @@
       :categories="categories"
     />
 
-    <div class="row">
-      <!-- 餐廳卡片 RestaurantCard-->
-      <RestaurantCard 
-        v-for="restaurant in restaurants" :key="restaurant.id" :initial-restaurant="restaurant" 
-      />
-    </div>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <div class="row">
+        <!-- 餐廳卡片 RestaurantCard-->
+        <RestaurantCard 
+          v-for="restaurant in restaurants" 
+          :key="restaurant.id" 
+          :initial-restaurant="restaurant" 
+        />
+      </div>
 
-    <!-- 分頁標籤 RestaurantPagination -->
-    <RestaurantsPagination 
-      v-if="totalPage.length > 1"
-      :category-id="categoryId"
-      :current-page="currentPage"
-      :total-page="totalPage"
-      :previous-page="previousPage"
-      :next-page="nextPage"    
-    />
+      <!-- 分頁標籤 RestaurantPagination -->
+      <RestaurantsPagination 
+        v-if="totalPage.length > 1"
+        :category-id="categoryId"
+        :current-page="currentPage"
+        :total-page="totalPage"
+        :previous-page="previousPage"
+        :next-page="nextPage"    
+      />
+
+      <!-- 處理空白頁面 -->
+      <div v-if="restaurants.length < 1">無此類別資料</div>
+    </template>
   </div>
 </template>
 
@@ -30,6 +38,7 @@ import NavTabs from "./../components/NavTabs";
 import RestaurantCard from "./../components/RestaurantCard"
 import RestaurantsNavPills from './../components/RestaurantsNavPills'
 import RestaurantsPagination from './../components/RestaurantsPagination'
+import Spinner from './../components/Spinner'
 import restaurantsAPI from './../apis/restaurants'
 import {Toast} from './../utils/helpers'
 
@@ -39,6 +48,7 @@ export default {
     RestaurantCard,
     RestaurantsNavPills,
     RestaurantsPagination,
+    Spinner
   },
   data () {
     return {
@@ -50,7 +60,8 @@ export default {
       totalPage: [],  // 一定要來自後端，無法事先知道
       previousPage: -1,
       nextPage: -1,
-      users: {}
+      users: {},
+      isLoading: true
     }
   },
   created () {
@@ -73,6 +84,7 @@ export default {
   methods: {
     async fetchRestaurants({ queryPage, queryCategoryId }) {
       try {
+        this.isLoading = true
         const response = await restaurantsAPI.getRestaurants({ 
           page: queryPage,
           categoryId: queryCategoryId
@@ -103,7 +115,9 @@ export default {
         this.previousPage = prev
         this.nextPage = next
 
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
           // 給使用者的提示
           Toast.fire({
             icon: 'error',

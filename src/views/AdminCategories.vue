@@ -25,7 +25,8 @@
         </div>
       </div>
     </form>
-    <table class="table">
+    <Spinner v-if="isLoading" />
+    <table v-else class="table">
       <thead class="thead-dark">
         <tr>
           <th
@@ -136,21 +137,24 @@
 </style>
 
 <script>
-import AdminNav from '@/components/AdminNav'
+import AdminNav from './../components/AdminNav'
+import Spinner from './../components/Spinner'
 import adminAPI from './../apis/admin'
 import { Toast } from './../utils/helpers'
 
 export default {
   name: 'AdminCategories',
   components: {
-    AdminNav
+    AdminNav,
+    Spinner
   },
   // 3. 定義 Vue 中使用的 data 資料
   data () {
     return {
       categories: [],
       newCategoryName: '',
-      isProcessing: false
+      isProcessing: false,
+      isLoading: true
     }
   },
   // 5. 調用 `fetchCategories` 方法
@@ -161,6 +165,7 @@ export default {
     // 4. 定義 `fetchCategories` 方法，串 API 資料帶入 Vue 物件
     async fetchCategories () {
       try {
+        this.isLoading = true
         const response = await adminAPI.categories.get()
         const { data } = response
 
@@ -176,8 +181,9 @@ export default {
           isEditing: false,
           nameCached: ''
         }))
-
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         console.log('Error', error)
         Toast.fire({
           icon: 'error',

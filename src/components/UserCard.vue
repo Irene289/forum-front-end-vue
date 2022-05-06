@@ -26,17 +26,19 @@
       class="mt-3">
       <button 
         v-if="user.isFollowed"
-        @click.stop.prevent="deleteFollow(user.id)"
         type="button" 
         class="btn btn-danger"
+        :disabled="isProcessing"
+        @click.stop.prevent="deleteFollow(user.id)"
       >
         取消追蹤
       </button>
       <button 
         v-else
-        @click.stop.prevent="addFollow(user.id)"
         type="button" 
         class="btn btn-primary"
+        :disabled="isProcessing"
+        @click.stop.prevent="addFollow(user.id)"
       >
         追蹤
       </button>
@@ -59,12 +61,14 @@ export default {
   },
   data() {
     return {
-      user: this.initialUser
+      user: this.initialUser,
+      isProcessing: false
     }
   },
   methods: {
     async addFollow(userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.addFollowing({ userId })
 
         if (data.status !== 'success') {
@@ -82,7 +86,9 @@ export default {
             }
           }
         })
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         console.log('Error', error)
         Toast.fire({
           icon: 'error',
@@ -92,6 +98,7 @@ export default {
     },
     async deleteFollow(userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.deleteFollowing({ userId })
 
         if (data.status !== 'success') {
@@ -109,7 +116,9 @@ export default {
             }
           }
         })
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         console.log('Error', error)
         Toast.fire({
           icon: 'error',
